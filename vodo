@@ -1,1 +1,990 @@
+local gl = "https://raw.githubusercontent.com/umut311/-l-farm/main/vodo"
 
+local qot = queue_on_teleport or syn and syn.queue_on_teleport or fluxus and fluxus.queue_on_teleport or getgenv().queue_on_teleport
+if qot then 
+    pcall(function() 
+        qot('local func, err = loadstring(game:HttpGet("' .. gl .. '?t=" .. tostring(math.floor(tick())))); if func then func() end') 
+    end) 
+end
+
+task.wait(2.5)
+
+local cg = game:GetService("CoreGui")
+local plrs = game:GetService("Players")
+local rs = game:GetService("RunService")
+local ts = game:GetService("TweenService")
+local vim = game:GetService("VirtualInputManager")
+local gs = game:GetService("GuiService")
+local uis = game:GetService("UserInputService")
+local hs = game:GetService("HttpService")
+local lp = plrs.LocalPlayer
+local pg = lp:WaitForChild("PlayerGui")
+
+_G.VoidAutoFarm = true
+
+for _, v in ipairs(cg:GetChildren()) do
+    if v.Name == "VoidClient" or v.Name == "VoidLogs" then v:Destroy() end
+end
+
+local settingsData = {
+    particlesEnabled = true,
+    hideKey = Enum.KeyCode.RightControl,
+    bgTransparency = 0.15,
+    themeColor = Color3.fromRGB(50, 50, 50)
+}
+
+local webhookData = {
+    saved = {},
+    activeName = ""
+}
+
+local isMobile = uis.TouchEnabled and not uis.KeyboardEnabled
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "VoidClient"
+gui.ResetOnSpawn = false
+gui.Parent = cg
+
+local mf = Instance.new("Frame")
+mf.Size = isMobile and UDim2.new(0, 400, 0, 250) or UDim2.new(0, 440, 0, 270)
+mf.Position = isMobile and UDim2.new(0.5, -200, 0.2, 0) or UDim2.new(0.5, -220, 0.7, 0)
+mf.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+mf.BackgroundTransparency = settingsData.bgTransparency
+mf.BorderSizePixel = 0
+mf.ClipsDescendants = true
+mf.Parent = gui
+local mfCorner = Instance.new("UICorner", mf)
+mfCorner.CornerRadius = UDim.new(0, 8)
+local mfStroke = Instance.new("UIStroke", mf)
+mfStroke.Color = settingsData.themeColor
+mfStroke.Thickness = 1.5
+
+local pf = Instance.new("Frame")
+pf.Size = UDim2.new(1, 0, 1, 0)
+pf.BackgroundTransparency = 1
+pf.ClipsDescendants = true
+pf.ZIndex = 1
+pf.Parent = mf
+
+coroutine.wrap(function()
+    while task.wait(0.3) do
+        if not gui or not gui.Parent then break end
+        if settingsData.particlesEnabled then
+            local p = Instance.new("TextLabel")
+            p.Text = "♥"
+            p.TextColor3 = settingsData.themeColor
+            p.BackgroundTransparency = 1
+            local sz = math.random(12, 18)
+            p.Size = UDim2.new(0, sz, 0, sz)
+            p.Position = UDim2.new(math.random(), 0, 1.1, 0)
+            p.Font = Enum.Font.Gotham
+            p.TextSize = sz
+            p.ZIndex = 5
+            p.Parent = pf
+            local tw = ts:Create(p, TweenInfo.new(math.random(4, 7), Enum.EasingStyle.Linear), {
+                Position = UDim2.new(p.Position.X.Scale, 0, -0.2, 0),
+                TextTransparency = 1
+            })
+            tw:Play()
+            game.Debris:AddItem(p, 8)
+        end
+    end
+end)()
+
+local tb = Instance.new("Frame")
+tb.Size = UDim2.new(1, 0, 0, 32)
+tb.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+tb.BackgroundTransparency = 0.2
+tb.BorderSizePixel = 0
+tb.ZIndex = 15
+tb.Parent = mf
+Instance.new("UICorner", tb).CornerRadius = UDim.new(0, 8)
+
+local tt = Instance.new("TextLabel")
+tt.Size = UDim2.new(1, -80, 1, 0)
+tt.Position = UDim2.new(0, 12, 0, 0)
+tt.BackgroundTransparency = 1
+tt.Text = "VOID | PREMIUM FARM"
+tt.TextColor3 = Color3.fromRGB(230, 230, 230)
+tt.Font = Enum.Font.GothamBold
+tt.TextSize = 12
+tt.TextXAlignment = Enum.TextXAlignment.Left
+tt.ZIndex = 15
+tt.Parent = tb
+
+local mb = Instance.new("TextButton")
+mb.Size = UDim2.new(0, 28, 0, 32)
+mb.Position = UDim2.new(1, -56, 0, 0)
+mb.BackgroundTransparency = 1
+mb.Text = "-"
+mb.TextColor3 = Color3.fromRGB(180, 180, 180)
+mb.Font = Enum.Font.GothamBold
+mb.TextSize = 16
+mb.ZIndex = 15
+mb.Parent = tb
+
+local isMin = false
+mb.MouseButton1Click:Connect(function()
+    isMin = not isMin
+    local targetSize = isMin and UDim2.new(0, mf.Size.X.Offset, 0, 32) or UDim2.new(0, mf.Size.X.Offset, 0, isMobile and 250 or 270)
+    ts:Create(mf, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+end)
+
+local cb = Instance.new("TextButton")
+cb.Size = UDim2.new(0, 28, 0, 32)
+cb.Position = UDim2.new(1, -28, 0, 0)
+cb.BackgroundTransparency = 1
+cb.Text = "X"
+cb.TextColor3 = Color3.fromRGB(200, 80, 80)
+cb.Font = Enum.Font.GothamBold
+cb.TextSize = 13
+cb.ZIndex = 15
+cb.Parent = tb
+
+cb.MouseButton1Click:Connect(function()
+    _G.VoidAutoFarm = false
+    gui:Destroy()
+end)
+
+local sidebar = Instance.new("Frame")
+sidebar.Size = UDim2.new(0, 110, 1, -32)
+sidebar.Position = UDim2.new(0, 0, 0, 32)
+sidebar.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+sidebar.BackgroundTransparency = 0.3
+sidebar.BorderSizePixel = 0
+sidebar.ZIndex = 15
+sidebar.Parent = mf
+
+local function createTabBtn(name, yPos)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -12, 0, 30)
+    b.Position = UDim2.new(0, 6, 0, yPos)
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    b.BackgroundTransparency = 0.3
+    b.Text = name
+    b.TextColor3 = Color3.fromRGB(200, 200, 200)
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 11
+    b.ZIndex = 15
+    b.Parent = sidebar
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+    return b
+end
+
+local tFarm = createTabBtn("Farm", 8)
+local tSet = createTabBtn("Settings", 44)
+local tWeb = createTabBtn("Webhook", 80)
+
+local function createContainer()
+    local f = Instance.new("ScrollingFrame")
+    f.Size = UDim2.new(1, -122, 1, -42)
+    f.Position = UDim2.new(0, 116, 0, 38)
+    f.BackgroundTransparency = 1
+    f.BorderSizePixel = 0
+    f.CanvasSize = UDim2.new(0, 0, 0, 300)
+    f.ScrollBarThickness = 3
+    f.ZIndex = 10
+    f.Visible = false
+    f.Parent = mf
+    return f
+end
+
+local cFarm = createContainer()
+cFarm.Visible = true
+local cSet = createContainer()
+local cWeb = createContainer()
+
+local function switchTab(activeBtn, activeContainer)
+    tFarm.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    tSet.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    tWeb.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    activeBtn.BackgroundColor3 = settingsData.themeColor
+    
+    for _, container in ipairs({cFarm, cSet, cWeb}) do
+        if container == activeContainer then
+            container.Visible = true
+            container.Position = UDim2.new(0, 130, 0, 38)
+            ts:Create(container, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(0, 116, 0, 38)}):Play()
+        else
+            container.Visible = false
+        end
+    end
+end
+
+tFarm.MouseButton1Click:Connect(function() switchTab(tFarm, cFarm) end)
+tSet.MouseButton1Click:Connect(function() switchTab(tSet, cSet) end)
+tWeb.MouseButton1Click:Connect(function() switchTab(tWeb, cWeb) end)
+tFarm.BackgroundColor3 = settingsData.themeColor
+
+local function createInfoLbl(y, text)
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(1, 0, 0, 22)
+    l.Position = UDim2.new(0, 0, 0, y)
+    l.BackgroundTransparency = 1
+    l.RichText = true
+    l.Text = text
+    l.TextColor3 = Color3.fromRGB(220, 220, 220)
+    l.Font = Enum.Font.GothamMedium
+    l.TextSize = 11
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.ZIndex = 12
+    l.Parent = cFarm
+    return l
+end
+
+local fPlayer = createInfoLbl(5, "Oyuncu: <font color='#FFFFFF'>" .. lp.Name .. "</font>")
+local fStatus = createInfoLbl(28, "Durum: <font color='#A0A0A0'>Başlatılıyor...</font>")
+local fTotalBots = createInfoLbl(51, "Toplam Bot: <font color='#FFFFFF'>0</font>")
+local fKilledBots = createInfoLbl(74, "Kesilen Bot: <font color='#FFFFFF'>0</font>")
+local fTimePassed = createInfoLbl(97, "Geçen Süre: <font color='#A0A0A0'>00:00:00</font>")
+local fTimeRemain = createInfoLbl(120, "Tahmini Kalan: <font color='#A0A0A0'>Hesaplanıyor...</font>")
+
+local db = Instance.new("TextButton")
+db.Size = UDim2.new(1, 0, 0, 28)
+db.Position = UDim2.new(0, 0, 0, 155)
+db.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+db.BackgroundTransparency = 0.2
+db.Text = "Discord Bağlantısını Kopyala"
+db.TextColor3 = Color3.fromRGB(220, 220, 220)
+db.Font = Enum.Font.GothamMedium
+db.TextSize = 11
+db.ZIndex = 15
+db.Parent = cFarm
+Instance.new("UICorner", db).CornerRadius = UDim.new(0, 6)
+
+db.MouseButton1Click:Connect(function()
+    pcall(function()
+        if setclipboard then
+            setclipboard(".gg/voido")
+            db.Text = "Kopyalandı!"
+            task.wait(1.5)
+            db.Text = "Discord Bağlantısını Kopyala"
+        end
+    end)
+end)
+
+local partLbl = Instance.new("TextLabel")
+partLbl.Size = UDim2.new(1, -50, 0, 28)
+partLbl.Position = UDim2.new(0, 0, 0, 5)
+partLbl.BackgroundTransparency = 1
+partLbl.Text = "Menü Partikülleri"
+partLbl.TextColor3 = Color3.fromRGB(220, 220, 220)
+partLbl.Font = Enum.Font.GothamMedium
+partLbl.TextSize = 11
+partLbl.TextXAlignment = Enum.TextXAlignment.Left
+partLbl.ZIndex = 12
+partLbl.Parent = cSet
+
+local toggleBg = Instance.new("TextButton")
+toggleBg.Size = UDim2.new(0, 40, 0, 20)
+toggleBg.Position = UDim2.new(1, -40, 0, 9)
+toggleBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleBg.AutoButtonColor = false
+toggleBg.Text = ""
+toggleBg.ZIndex = 12
+toggleBg.Parent = cSet
+Instance.new("UICorner", toggleBg).CornerRadius = UDim.new(1, 0)
+
+local toggleDot = Instance.new("Frame")
+toggleDot.Size = UDim2.new(0, 16, 0, 16)
+toggleDot.Position = UDim2.new(0, 2, 0, 2)
+toggleDot.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+toggleDot.BorderSizePixel = 0
+toggleDot.ZIndex = 13
+toggleDot.Parent = toggleBg
+Instance.new("UICorner", toggleDot).CornerRadius = UDim.new(1, 0)
+
+toggleBg.MouseButton1Click:Connect(function()
+    settingsData.particlesEnabled = not settingsData.particlesEnabled
+    local goalPos = settingsData.particlesEnabled and UDim2.new(0, 22, 0, 2) or UDim2.new(0, 2, 0, 2)
+    local goalCol = settingsData.particlesEnabled and Color3.fromRGB(80, 200, 120) or Color3.fromRGB(40, 40, 40)
+    ts:Create(toggleDot, TweenInfo.new(0.15), {Position = goalPos}):Play()
+    ts:Create(toggleBg, TweenInfo.new(0.15), {BackgroundColor3 = goalCol}):Play()
+end)
+
+local sLbl = Instance.new("TextLabel")
+sLbl.Size = UDim2.new(1, 0, 0, 18)
+sLbl.Position = UDim2.new(0, 0, 0, 40)
+sLbl.BackgroundTransparency = 1
+sLbl.Text = "Menü Arkaplan Şeffaflığı"
+sLbl.TextColor3 = Color3.fromRGB(180, 180, 180)
+sLbl.Font = Enum.Font.GothamMedium
+sLbl.TextSize = 10
+sLbl.TextXAlignment = Enum.TextXAlignment.Left
+sLbl.ZIndex = 12
+sLbl.Parent = cSet
+
+local transBar = Instance.new("TextButton")
+transBar.Size = UDim2.new(1, 0, 0, 24)
+transBar.Position = UDim2.new(0, 0, 0, 60)
+transBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+transBar.AutoButtonColor = false
+transBar.Text = ""
+transBar.ZIndex = 12
+transBar.Parent = cSet
+Instance.new("UICorner", transBar).CornerRadius = UDim.new(0, 6)
+
+local transFill = Instance.new("Frame")
+transFill.Size = UDim2.new(0.15, 0, 1, 0)
+transFill.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+transFill.BorderSizePixel = 0
+transFill.ZIndex = 13
+transFill.Parent = transBar
+Instance.new("UICorner", transFill).CornerRadius = UDim.new(0, 6)
+
+transBar.MouseButton1Down:Connect(function()
+    local mouse = plrs.LocalPlayer:GetMouse()
+    local conn
+    conn = rs.RenderStepped:Connect(function()
+        if not uis:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+            conn:Disconnect()
+            return
+        end
+        local relX = math.clamp((mouse.X - transBar.AbsolutePosition.X) / transBar.AbsoluteSize.X, 0, 1)
+        transFill.Size = UDim2.new(relX, 0, 1, 0)
+        settingsData.bgTransparency = relX
+        mf.BackgroundTransparency = relX
+    end)
+end)
+
+local colorPickerBtn = Instance.new("TextButton")
+colorPickerBtn.Size = UDim2.new(1, 0, 0, 28)
+colorPickerBtn.Position = UDim2.new(0, 0, 0, 95)
+colorPickerBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+colorPickerBtn.Text = "Tema Rengi Seç (Color Picker)"
+colorPickerBtn.TextColor3 = Color3.fromRGB(240, 240, 240)
+colorPickerBtn.Font = Enum.Font.GothamBold
+colorPickerBtn.TextSize = 11
+colorPickerBtn.ZIndex = 12
+colorPickerBtn.Parent = cSet
+Instance.new("UICorner", colorPickerBtn).CornerRadius = UDim.new(0, 6)
+
+local pickerWin = Instance.new("Frame")
+pickerWin.Size = UDim2.new(0, 220, 0, 160)
+pickerWin.Position = UDim2.new(0.5, -110, 0.5, -80)
+pickerWin.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+pickerWin.BorderSizePixel = 0
+pickerWin.Visible = false
+pickerWin.ZIndex = 50
+pickerWin.Parent = mf
+Instance.new("UICorner", pickerWin).CornerRadius = UDim.new(0, 8)
+Instance.new("UIStroke", pickerWin).Color = Color3.fromRGB(50, 50, 50)
+
+local pickerClose = Instance.new("TextButton")
+pickerClose.Size = UDim2.new(0, 20, 0, 20)
+pickerClose.Position = UDim2.new(1, -22, 0, 2)
+pickerClose.BackgroundTransparency = 1
+pickerClose.Text = "X"
+pickerClose.TextColor3 = Color3.fromRGB(200, 80, 80)
+pickerClose.Font = Enum.Font.GothamBold
+pickerClose.TextSize = 11
+pickerClose.ZIndex = 55
+pickerClose.Parent = pickerWin
+
+pickerClose.MouseButton1Click:Connect(function()
+    pickerWin.Visible = false
+end)
+
+local hueBarWin = Instance.new("TextButton")
+hueBarWin.Size = UDim2.new(1, -20, 0, 24)
+hueBarWin.Position = UDim2.new(0, 10, 0, 30)
+hueBarWin.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+hueBarWin.AutoButtonColor = false
+hueBarWin.Text = ""
+hueBarWin.ZIndex = 52
+hueBarWin.Parent = pickerWin
+Instance.new("UICorner", hueBarWin).CornerRadius = UDim.new(0, 6)
+
+local uigWin = Instance.new("UIGradient")
+uigWin.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
+    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+    ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+})
+uigWin.Parent = hueBarWin
+
+hueBarWin.MouseButton1Down:Connect(function()
+    local mouse = plrs.LocalPlayer:GetMouse()
+    local conn
+    conn = rs.RenderStepped:Connect(function()
+        if not uis:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+            conn:Disconnect()
+            return
+        end
+        local relX = math.clamp((mouse.X - hueBarWin.AbsolutePosition.X) / hueBarWin.AbsoluteSize.X, 0, 1)
+        local selectedColor = Color3.fromHSV(relX, 1, 1)
+        settingsData.themeColor = selectedColor
+        mfStroke.Color = selectedColor
+        tFarm.BackgroundColor3 = selectedColor
+    end)
+end)
+
+local paletteContainer = Instance.new("Frame")
+paletteContainer.Size = UDim2.new(1, -20, 0, 60)
+paletteContainer.Position = UDim2.new(0, 10, 0, 65)
+paletteContainer.BackgroundTransparency = 1
+paletteContainer.ZIndex = 52
+paletteContainer.Parent = pickerWin
+
+local colors = {
+    Color3.fromRGB(255, 255, 255),
+    Color3.fromRGB(0, 0, 0),
+    Color3.fromRGB(120, 120, 120),
+    Color3.fromRGB(255, 49, 49),
+    Color3.fromRGB(40, 180, 40),
+    Color3.fromRGB(50, 100, 255),
+    Color3.fromRGB(255, 220, 0),
+    Color3.fromRGB(255, 120, 0),
+    Color3.fromRGB(160, 32, 240),
+    Color3.fromRGB(255, 105, 180)
+}
+
+for i, col in ipairs(colors) do
+    local btn = Instance.new("TextButton")
+    local row = math.floor((i - 1) / 5)
+    local colIdx = (i - 1) % 5
+    btn.Size = UDim2.new(0, 32, 0, 24)
+    btn.Position = UDim2.new(0, colIdx * 38, 0, row * 28)
+    btn.BackgroundColor3 = col
+    btn.Text = ""
+    btn.ZIndex = 53
+    btn.Parent = paletteContainer
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    
+    btn.MouseButton1Click:Connect(function()
+        settingsData.themeColor = col
+        mfStroke.Color = col
+        tFarm.BackgroundColor3 = col
+    end)
+end
+
+colorPickerBtn.MouseButton1Click:Connect(function()
+    pickerWin.Visible = not pickerWin.Visible
+end)
+
+local wNameBox = Instance.new("TextBox")
+wNameBox.Size = UDim2.new(1, 0, 0, 26)
+wNameBox.Position = UDim2.new(0, 0, 0, 5)
+wNameBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+wNameBox.PlaceholderText = "Webhook Adı (Örn: Ana Log)"
+wNameBox.Text = ""
+wNameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+wNameBox.Font = Enum.Font.Gotham
+wNameBox.TextSize = 11
+wNameBox.ZIndex = 12
+wNameBox.Parent = cWeb
+Instance.new("UICorner", wNameBox).CornerRadius = UDim.new(0, 6)
+
+local wUrlBox = Instance.new("TextBox")
+wUrlBox.Size = UDim2.new(1, 0, 0, 26)
+wUrlBox.Position = UDim2.new(0, 0, 0, 36)
+wUrlBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+wUrlBox.PlaceholderText = "Discord Webhook URL"
+wUrlBox.Text = ""
+wUrlBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+wUrlBox.Font = Enum.Font.Gotham
+wUrlBox.TextSize = 11
+wUrlBox.ZIndex = 12
+wUrlBox.Parent = cWeb
+Instance.new("UICorner", wUrlBox).CornerRadius = UDim.new(0, 6)
+
+local wAddBtn = Instance.new("TextButton")
+wAddBtn.Size = UDim2.new(1, 0, 0, 26)
+wAddBtn.Position = UDim2.new(0, 0, 0, 67)
+wAddBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 40)
+wAddBtn.Text = "Webhook Ekle / Kaydet"
+wAddBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+wAddBtn.Font = Enum.Font.GothamBold
+wAddBtn.TextSize = 11
+wAddBtn.ZIndex = 12
+wAddBtn.Parent = cWeb
+Instance.new("UICorner", wAddBtn).CornerRadius = UDim.new(0, 6)
+
+local wStatusLbl = Instance.new("TextLabel")
+wStatusLbl.Size = UDim2.new(1, 0, 0, 20)
+wStatusLbl.Position = UDim2.new(0, 0, 0, 98)
+wStatusLbl.BackgroundTransparency = 1
+wStatusLbl.Text = "Aktif Webhook: Yok"
+wStatusLbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+wStatusLbl.Font = Enum.Font.GothamMedium
+wStatusLbl.TextSize = 10
+wStatusLbl.TextXAlignment = Enum.TextXAlignment.Left
+wStatusLbl.ZIndex = 12
+wStatusLbl.Parent = cWeb
+
+wAddBtn.MouseButton1Click:Connect(function()
+    local name = wNameBox.Text
+    local url = wUrlBox.Text
+    if name ~= "" and url ~= "" then
+        webhookData.saved[name] = url
+        webhookData.activeName = name
+        wStatusLbl.Text = "Aktif Webhook: " .. name
+        wNameBox.Text = ""
+        wUrlBox.Text = ""
+    end
+end)
+
+local function sendWebhookLog(title, desc)
+    if webhookData.activeName == "" then return end
+    local url = webhookData.saved[webhookData.activeName]
+    if not url then return end
+    
+    local data = {
+        ["embeds"] = {{
+            ["title"] = title,
+            ["description"] = desc,
+            ["color"] = 5793266,
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%S")
+        }}
+    }
+    local encoded = hs:JSONEncode(data)
+    pcall(function()
+        http_request({
+            Url = url,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = encoded
+        })
+    end)
+end
+
+uis.InputBegan:Connect(function(input, gp)
+    if input.KeyCode == settingsData.hideKey then
+        mf.Visible = not mf.Visible
+    end
+end)
+
+local drg, dInp, dStart, sPos = false, nil, nil, nil
+tb.InputBegan:Connect(function(ip)
+    if ip.UserInputType == Enum.UserInputType.MouseButton1 or ip.UserInputType == Enum.UserInputType.Touch then
+        drg = true
+        dStart = ip.Position
+        sPos = mf.Position
+        ip.Changed:Connect(function()
+            if ip.UserInputState == Enum.UserInputState.End then drg = false end
+        end)
+    end
+end)
+tb.InputChanged:Connect(function(ip)
+    if ip.UserInputType == Enum.UserInputType.MouseMovement or ip.UserInputType == Enum.UserInputType.Touch then
+        dInp = ip
+    end
+end)
+uis.InputChanged:Connect(function(ip)
+    if ip == dInp and drg then
+        local d = ip.Position - dStart
+        ts:Create(mf, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(sPos.X.Scale, sPos.X.Offset + d.X, sPos.Y.Scale, sPos.Y.Offset + d.Y)}):Play()
+    end
+end)
+
+local stTime = tick()
+local matchStartTime = tick()
+local kBots = 0
+local totalBotsInMap = 0
+local fLoad = true
+local mTime = 0
+local mStg = "WS"
+local sTmr = 0
+local ignoredBots = {}
+
+local l1 = CFrame.new(659.5, 3.6, -172.4)
+local l2 = CFrame.new(596.8, 3.3, 110.8)
+local l3 = CFrame.new(349.9, 3.6, 24.3)
+
+local function clkObj(o)
+    if not o then return false end
+    pcall(function()
+        if getconnections then
+            for _, c in ipairs(getconnections(o.Activated) or {}) do c:Fire() end
+            for _, c in ipairs(getconnections(o.MouseButton1Click) or {}) do c:Fire() end
+        end
+    end)
+    pcall(function()
+        local ap = o.AbsolutePosition
+        local as = o.AbsoluteSize
+        local is = gs:GetGuiInset()
+        if as.X > 0 and as.Y > 0 then
+            local x = ap.X + (as.X / 2)
+            local y = ap.Y + (as.Y / 2) + is.Y
+            vim:SendMouseButtonEvent(x, y, 0, true, game, 1)
+            task.wait(0.15)
+            vim:SendMouseButtonEvent(x, y, 0, false, game, 1)
+        end
+    end)
+end
+
+local function isTrulyVisible(obj)
+    local curr = obj
+    while curr and curr ~= game and curr.Parent ~= game do
+        if curr:IsA("GuiObject") and not curr.Visible then
+            return false
+        elseif curr:IsA("LayerCollector") and not curr.Enabled then
+            return false
+        end
+        curr = curr.Parent
+    end
+    return true
+end
+
+local function checkEndScreen()
+    local isDone = false
+    local clickBtn = nil
+    pcall(function()
+        for _, obj in ipairs(pg:GetDescendants()) do
+            if (obj:IsA("TextLabel") or obj:IsA("TextButton")) then
+                if obj.AbsolutePosition.X > 0 and obj.AbsoluteSize.X > 40 and obj.AbsoluteSize.Y > 10 then
+                    if isTrulyVisible(obj) then
+                        local txt = string.upper(obj.Text or "")
+                        txt = string.gsub(txt, "^%s*(.-)%s*$", "%1")
+                        
+                        if string.find(txt, "BAŞARILI") then
+                            isDone = true
+                        end
+                        
+                        if string.find(txt, "ÜSSE") or string.find(txt, "USSE") or string.find(txt, "GERI DON") or string.find(txt, "GERİ DÖN") then
+                            isDone = true
+                            clickBtn = obj
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    return isDone, clickBtn
+end
+
+local function dLob()
+    fLoad = true
+    ignoredBots = {}
+    matchStartTime = tick()
+    pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>Operasyon Menüsü Açılıyor</font>" end)
+    
+    pcall(function()
+        for _, o in ipairs(pg:GetDescendants()) do
+            if (o:IsA("TextLabel") or o:IsA("TextButton")) and o.Visible then
+                local txt = string.upper(o.Text or "")
+                if string.find(txt, "TAMAM") or string.find(txt, "KAPAT") then
+                    clkObj(o:IsA("GuiButton") and o or o.Parent)
+                end
+            end
+        end
+    end)
+
+    pcall(function()
+        local og = pg:FindFirstChild("Operasyon") or pg:FindFirstChild("Operation")
+        if og then
+            og.Enabled = true
+            local o = og:FindFirstChild("Operasyon") or og:FindFirstChild("Frame")
+            if o then o.Visible = true end
+        end
+    end)
+    task.wait(0.5)
+    pcall(function()
+        for _, o in ipairs(pg:GetDescendants()) do
+            if o:IsA("TextLabel") or o:IsA("TextButton") then
+                local txt = string.upper(o.Text or "")
+                if string.find(txt, "ÇÖL ŞEHRİ") or string.find(txt, "COL SEHRI") or o.Name == "Çöl Şehri" then
+                    clkObj(o:IsA("GuiButton") and o or o.Parent)
+                end
+            end
+        end
+    end)
+    task.wait(1)
+    pcall(function()
+        for _, o in ipairs(pg:GetDescendants()) do
+            if o:IsA("TextLabel") or o:IsA("TextButton") then
+                local txt = string.upper(o.Text or "")
+                if string.find(txt, "BAŞLAT") or string.find(txt, "BASLAT") then
+                    clkObj(o:IsA("GuiButton") and o or o.Parent)
+                end
+            end
+        end
+    end)
+    task.wait(0.5)
+    pcall(function()
+        local bestBtn = nil
+        local minPlr = 90
+        for _, o in ipairs(pg:GetDescendants()) do
+            if o:IsA("TextLabel") or o:IsA("TextButton") then
+                local txt = o.Text or ""
+                local c, m = string.match(txt, "(%d+)/(%d+)")
+                if c and m then
+                    local cur = tonumber(c)
+                    local maxp = tonumber(m)
+                    if cur and maxp and cur < 90 and cur < minPlr then
+                        local ancestor = o.Parent
+                        local foundKatil = nil
+                        for _ = 1, 6 do
+                            if ancestor and ancestor ~= pg then
+                                for _, ch in ipairs(ancestor:GetDescendants()) do
+                                    if (ch:IsA("TextButton") or ch:IsA("TextLabel")) then
+                                        local chTxt = string.upper(ch.Text or "")
+                                        if string.find(chTxt, "KATIL") and not string.find(chTxt, "OTO") then
+                                            foundKatil = ch:IsA("GuiButton") and ch or ch.Parent
+                                            break
+                                        end
+                                    end
+                                end
+                                if foundKatil then break end
+                                ancestor = ancestor.Parent
+                            else
+                                break
+                            end
+                        end
+                        if foundKatil then
+                            minPlr = cur
+                            bestBtn = foundKatil
+                        end
+                    end
+                end
+            end
+        end
+        if bestBtn then
+            clkObj(bestBtn)
+        end
+    end)
+end
+
+local function pK()
+    pcall(function()
+        if sethiddenproperty then
+            pcall(function() sethiddenproperty(lp, "SimulationRadius", 9999999) end)
+            pcall(function() sethiddenproperty(lp, "MaxSimulationRadius", 9999999) end)
+        end
+
+        local c = lp.Character
+        if not c then return end
+
+        local botsToKill = {}
+        for _, o in ipairs(workspace:GetDescendants()) do
+            if o:IsA("Model") and o ~= c and not ignoredBots[o] then
+                local h = o:FindFirstChildOfClass("Humanoid")
+                if h and h.Health > 0 and not plrs:GetPlayerFromCharacter(o) then
+                    table.insert(botsToKill, {M = o, H = h})
+                end
+            end
+        end
+
+        totalBotsInMap = #botsToKill + kBots
+
+        if #botsToKill > 0 then
+            task.wait(0.1) 
+            for _, b in ipairs(botsToKill) do
+                if b.H and b.H.Parent then
+                    pcall(function() b.H:TakeDamage(99999) end)
+                    b.H.Health = 0
+                    
+                    local hd = b.M:FindFirstChild("Head")
+                    if hd then hd:Destroy() end
+                    
+                    b.M:BreakJoints()
+                    
+                    for _, desc in ipairs(b.M:GetDescendants()) do
+                        if desc:IsA("BasePart") then
+                            desc.CanCollide = false
+                            desc.Transparency = 1
+                        elseif desc:IsA("NumberValue") or desc:IsA("IntValue") then
+                            local n = string.lower(desc.Name)
+                            if n:find("health") or n:find("hp") or n:find("life") then
+                                desc.Value = 0
+                            end
+                        end
+                    end
+                    
+                    task.delay(0.2, function()
+                        if b.H and b.H.Health > 0 then
+                            ignoredBots[b.M] = true
+                            pcall(function()
+                                local rPart = b.M:FindFirstChild("HumanoidRootPart") or b.M.PrimaryPart
+                                if rPart then rPart.CFrame = CFrame.new(0, -10000, 0) end
+                                b.M:Destroy()
+                            end)
+                        end
+                    end)
+                end
+            end
+            kBots = kBots + #botsToKill
+        end
+    end)
+end
+
+local function tps(l)
+    pcall(function()
+        local c = lp.Character
+        if c and c:FindFirstChild("HumanoidRootPart") then
+            c.HumanoidRootPart.CFrame = l
+            c.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+        end
+    end)
+end
+
+local function dKill()
+    if fLoad then
+        mTime = tick()
+        mStg = "WS"
+        fLoad = false
+        kBots = 0
+        ignoredBots = {}
+    end
+    
+    local c = lp.Character
+    
+    if c and c:FindFirstChildOfClass("Humanoid") and c:FindFirstChildOfClass("Humanoid").Sit then
+        if tick() - mTime < 1.5 then
+            pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>Helikopterde (1.5s)</font>" end)
+            return
+        end
+        pcall(function() 
+            c.Humanoid.Sit = false 
+            c.Humanoid.Jump = true 
+        end)
+        pcall(function()
+            local hrp = c:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local jnts = hrp:GetJoints()
+                for i = 1, #jnts do
+                    local w = jnts[i]
+                    if w.ClassName == "Weld" or w.Name == "SeatWeld" then 
+                        w:Destroy() 
+                    end
+                end
+                hrp.CFrame = hrp.CFrame + Vector3.new(0, 3, 0)
+            end
+        end)
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>Helikopterden İniyor</font>" end)
+        return
+    end
+
+    if mStg ~= "WS" and mStg ~= "DN" then
+        local over, eBtn = checkEndScreen()
+        if over then
+            mStg = "DN"
+            if eBtn then
+                clkObj(eBtn)
+                if eBtn.Parent then clkObj(eBtn.Parent) end
+            end
+            return
+        end
+    end
+
+    if mStg == "WS" then
+        local e = tick() - mTime
+        local kalan = 60 - math.floor(e)
+        if kalan > 0 then
+            pcall(function() fStatus.Text = string.format("Durum: <font color='#A0A0A0'>Savaş Bekleniyor: %ds</font>", kalan) end)
+        else
+            mStg = "TP1"
+            sTmr = tick()
+        end
+        
+    elseif mStg == "TP1" then
+        tps(l1)
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>1. Bölge Temizleniyor</font>" end)
+        pK()
+        if tick() - sTmr >= 7.0 then
+            mStg = "TP2"
+            sTmr = tick()
+        end
+
+    elseif mStg == "TP2" then
+        tps(l2)
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>2. Bölge Temizleniyor</font>" end)
+        pK()
+        if tick() - sTmr >= 9.0 then
+            mStg = "TP3"
+            sTmr = tick()
+        end
+
+    elseif mStg == "TP3" then
+        tps(l3)
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>3. Bölge Temizleniyor</font>" end)
+        pK()
+        if tick() - sTmr >= 7.0 then
+            mStg = "TP1_AGAIN"
+            sTmr = tick()
+        end
+
+    elseif mStg == "TP1_AGAIN" then
+        tps(l1)
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>1. Bölge Son Kontrol</font>" end)
+        pK()
+        if tick() - sTmr >= 7.0 then
+            mStg = "WE"
+            sTmr = tick()
+        end
+
+    elseif mStg == "WE" then
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>Çıkış Bekleniyor</font>" end)
+        pK() 
+        
+        if tick() - mTime > 140 or tick() - sTmr > 12 then
+            pcall(function()
+                if lp.Character and lp.Character:FindFirstChildOfClass("Humanoid") then
+                    lp.Character.Humanoid.Health = 0
+                end
+            end)
+            mStg = "DN"
+            sTmr = tick()
+            return
+        end
+        
+    elseif mStg == "DN" then
+        pcall(function() fStatus.Text = "Durum: <font color='#A0A0A0'>Lobiye Dönülüyor</font>" end)
+        pcall(function()
+            for _, obj in ipairs(pg:GetDescendants()) do
+                if (obj:IsA("TextLabel") or obj:IsA("TextButton")) and obj.Visible then
+                    if obj.AbsolutePosition.X > 0 and obj.AbsoluteSize.X > 40 and obj.AbsoluteSize.Y > 10 then
+                        if isTrulyVisible(obj) then
+                            local txt = string.upper(obj.Text or "")
+                            if string.find(txt, "ÜSSE") or string.find(txt, "USSE") or string.find(txt, "GERI DON") or string.find(txt, "GERİ DÖN") then
+                                clkObj(obj)
+                                if obj.Parent then clkObj(obj.Parent) end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end
+
+coroutine.wrap(function()
+    while task.wait(0.5) do
+        if not gui.Parent then break end
+        if _G.VoidAutoFarm then
+            if game.PlaceId == 3231515867 or game.PlaceId == 79691020115124 then
+                dLob()
+                task.wait(2.5) 
+            else
+                pcall(dKill)
+            end
+        end
+        
+        local elapsed = math.floor(tick() - matchStartTime)
+        local hrs = math.floor(elapsed / 3600)
+        local mins = math.floor((elapsed % 3600) / 60)
+        local secs = elapsed % 60
+        
+        pcall(function()
+            fTotalBots.Text = "Toplam Bot: <font color='#FFFFFF'>" .. tostring(totalBotsInMap) .. "</font>"
+            fKilledBots.Text = "Kesilen Bot: <font color='#FFFFFF'>" .. tostring(kBots) .. "</font>"
+            fTimePassed.Text = string.format("Geçen Süre: <font color='#A0A0A0'>%02d:%02d:%02d</font>", hrs, mins, secs)
+            
+            if kBots > 0 then
+                local avgTimePerBot = elapsed / kBots
+                local remainingBots = totalBotsInMap - kBots
+                if remainingBots < 0 then remainingBots = 0 end
+                local remSecs = math.floor(remainingBots * avgTimePerBot)
+                local rMins = math.floor(remSecs / 60)
+                local rSecs = remSecs % 60
+                fTimeRemain.Text = string.format("Tahmini Kalan: <font color='#A0A0A0'>%02d:%02d</font>", rMins, rSecs)
+            else
+                fTimeRemain.Text = "Tahmini Kalan: <font color='#A0A0A0'>Hesaplanıyor...</font>"
+            end
+        end)
+    end
+end)()
